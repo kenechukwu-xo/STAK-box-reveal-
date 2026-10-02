@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAK · box reveal · all exports</title>
+<style>
+  :root { --bg:#0A1020; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:#0A1020; color:#E6ECF4; min-height:100vh; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid rgba(255,255,255,.08); }
+  header h1 { font-size:15px; font-weight:600; }
+  header span { font-size:12px; color:rgba(230,236,244,.55); }
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:20px 24px 0; }
+  .tabs button { font:inherit; font-size:13px; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#E6ECF4; cursor:pointer; }
+  .tabs button.active { background:#66B7DA; color:#0A1020; border-color:#66B7DA; }
+  .stage { position:relative; width:min(92vw, 720px); aspect-ratio:1/1; margin:22px auto 14px; border-radius:20px; overflow:hidden; background:var(--bg); transition:background .25s; }
+  .stage.checker { background-color:#8a8a8a; background-image:
+      linear-gradient(45deg,#6f6f6f 25%,transparent 25%),linear-gradient(-45deg,#6f6f6f 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#6f6f6f 75%),linear-gradient(-45deg,transparent 75%,#6f6f6f 75%);
+      background-size:40px 40px; background-position:0 0,0 20px,20px -20px,-20px 0; }
+  .stage > * { position:absolute; inset:0; width:100%; height:100%; display:none; object-fit:contain; }
+  .stage > .on { display:block; }
+  .meta { text-align:center; font-size:12.5px; color:rgba(230,236,244,.6); padding:0 24px; }
+  .meta code { color:#9ED1E8; }
+  .controls { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; padding:14px 24px 34px; }
+  .controls button, .controls label { font:inherit; font-size:13px; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#E6ECF4; cursor:pointer; }
+  .controls button.active { background:#66B7DA; color:#0A1020; border-color:#66B7DA; }
+  .controls label { display:inline-flex; align-items:center; gap:8px; }
+  .controls input[type=color] { width:28px; height:22px; border:0; background:none; padding:0; cursor:pointer; }
+  .controls.off { opacity:.3; pointer-events:none; }
+  .dl { text-align:center; padding-bottom:40px; font-size:12.5px; }
+  .dl a { color:#9ED1E8; }
+</style>
+</head>
+<body>
+<header><h1>STAK · box reveal</h1><span id="which"></span></header>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="stage" id="stage">
+  <video id="v" muted playsinline preload="auto"></video>
+  <img id="i" alt="STAK box reveal">
+</div>
+
+<p class="meta" id="meta"></p>
+
+<div class="controls" id="bgc">
+  <button id="replay">▶ Replay</button>
+  <button data-bg="#0A1020" class="active">Navy</button>
+  <button data-bg="#FFFFFF">White</button>
+  <button data-bg="#425165">Slate</button>
+  <button data-bg="checker">Checker</button>
+  <label>Custom <input type="color" id="pick" value="#0A1020"></label>
+</div>
+
+<p class="dl"><a id="dlink" href="#" download>Download this file</a></p>
+
+<script>
+  const E='exports/';
+  const ITEMS=[
+    {id:'webm-a', label:'Transparent WebM', kind:'video', src:E+'stak-box-reveal-1200-alpha-once.webm', alpha:true, loop:false,
+      meta:'VP9 with real alpha, 1200×1200, plays once. Chrome / Edge / Firefox. Use <code>&lt;video autoplay muted playsinline&gt;</code>.'},
+    {id:'apng-a', label:'Transparent APNG', kind:'img', src:E+'stak-box-reveal-1200-alpha-once.apng', alpha:true,
+      meta:'Animated PNG with real alpha, 1200×1200, plays once. Works everywhere including Safari, as an <code>&lt;img&gt;</code>. 20MB, so it loads slower.'},
+    {id:'gif-b', label:'Behance GIF', kind:'img', src:E+'stak-box-reveal-1400-0a1020-once.gif', alpha:false,
+      meta:'1400×1400 on #0A1020, plays once and holds the full state. GIF has no soft alpha, so the colour is baked in.'},
+    {id:'mp4-w', label:'Website MP4', kind:'video', src:E+'stak-box-reveal-1400-0a1020-once.mp4', alpha:false, loop:false,
+      meta:'H.264, 1400×1400 on #0A1020, plays once and holds the last frame. Smallest file; the one for LinkedIn and Instagram too.'},
+    {id:'webm-w', label:'Website WebM', kind:'video', src:E+'stak-box-reveal-1400-0a1020-once.webm', alpha:false, loop:false,
+      meta:'VP9, 1400×1400 on #0A1020. Smaller than the MP4 where supported.'},
+    {id:'gif-f', label:'Figma loop GIF', kind:'img', src:E+'stak-box-reveal-1200-0a1020-loop.gif', alpha:false,
+      meta:'1200×1200 on #0A1020, loops. Drop into a Figma frame; it animates in prototype playback on any plan.'},
+    {id:'poster-a', label:'Poster (alpha)', kind:'img', src:E+'stak-box-reveal-1200-alpha-once-poster.png', alpha:true,
+      meta:'Settled last frame with transparency, for placeholders.'},
+    {id:'poster-n', label:'Poster (navy)', kind:'img', src:E+'stak-box-reveal-1400-0a1020-once-poster.png', alpha:false,
+      meta:'Settled last frame on #0A1020.'},
+  ];
+  const tabs=document.getElementById('tabs'), v=document.getElementById('v'), i=document.getElementById('i'), stage=document.getElementById('stage');
+  const meta=document.getElementById('meta'), which=document.getElementById('which'), bgc=document.getElementById('bgc'), dlink=document.getElementById('dlink');
+  let cur=null;
+  const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  function show(item){
+    cur=item; which.textContent=item.label; meta.innerHTML=item.meta; dlink.href=item.src;
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.id===item.id));
+    bgc.classList.toggle('off',!item.alpha); if(!item.alpha){ stage.classList.remove('checker'); stage.style.setProperty('--bg','#0A1020'); }
+    v.pause(); v.classList.remove('on'); i.classList.remove('on');
+    if(item.kind==='video'){ v.loop=!!item.loop; v.src=item.src; v.classList.add('on'); v.play().catch(()=>{}); }
+    else { i.src=item.src+'?t='+Date.now(); i.classList.add('on'); }
+  }
+  ITEMS.forEach(it=>{ const b=document.createElement('button'); b.textContent=it.label; b.dataset.id=it.id; b.onclick=()=>show(it); tabs.appendChild(b); });
+  v.addEventListener('error',()=>{ if(cur&&cur.id==='webm-a') show(ITEMS[1]); },true);
+  show(isSafari?ITEMS[1]:ITEMS[0]);
+  document.getElementById('replay').onclick=()=>{ if(cur.kind==='video'){ v.currentTime=0; v.play(); } else { i.src=cur.src+'?t='+Date.now(); } };
+  function setBg(val){ if(val==='checker'){ stage.classList.add('checker'); } else { stage.classList.remove('checker'); stage.style.setProperty('--bg',val); } }
+  document.querySelectorAll('#bgc button[data-bg]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#bgc button[data-bg]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); setBg(b.dataset.bg); });
+  document.getElementById('pick').oninput=e=>{ document.querySelectorAll('#bgc button[data-bg]').forEach(x=>x.classList.remove('active')); setBg(e.target.value); };
+</script>
+</body>
+</html>
